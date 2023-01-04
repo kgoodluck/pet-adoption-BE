@@ -1,6 +1,4 @@
 const express = require('express');
-const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
 const router = express.Router();
 const path = require('path');
 const { readAllPets } = require('../models/petsModels');
@@ -11,6 +9,19 @@ router.get('/', (req, res) => {
     try {
         const petsArray = readAllPets();
         res.send(petsArray);
+    } catch(err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+})
+
+router.get('/:petId', (req, res) => {
+    try {
+        const { petId } = req.params;
+        console.log('req', req);
+        const petsArray = readAllPets();
+        const pet = petsArray.find(item => item.id === petId)
+        res.send(pet);
     } catch(err) {
         console.log(err);
         res.status(500).send(err);
