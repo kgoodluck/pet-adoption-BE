@@ -72,9 +72,32 @@ function verifyPassword(req, res, next) {
 
 function createToken(req, res, next) {
     const {user} = req.body;
-    const token = jwt.sign({ email: user.email}, process.env.TOKEN_SECRET);
+    const token = jwt.sign({ id: user.id }, process.env.TOKEN_SECRET);
     req.body.token = token;
     next();
 }
 
-module.exports = { isNewUser, checkPasswords, hashPassword, doesUserExist, verifyPassword, createToken }
+function verifyToken(req, res, next) {
+    const { token } = req.cookies;
+    console.log('token', token);
+    if (!token) {
+        res.status(401).send("Token Required");
+        return;
+    }
+    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+        if (err) {
+            res.status(401).send("Invalid Token");
+            return;
+        }
+        console.log('decoded', decoded);
+        if (decoded) {
+            res.locals.token = token;
+            res.locals.userId = decoded.id;
+            next();
+            return
+        }
+        next();
+    });
+}
+
+module.exports = { isNewUser, checkPasswords, hashPassword, doesUserExist, verifyPassword, createToken, verifyToken }

@@ -1,4 +1,4 @@
-const { addNewUser } = require('../models/usersModels')
+const { addNewUser, getUserById } = require('../models/usersModels')
 
 function signUp(req, res) {
     try {
@@ -14,10 +14,33 @@ function signUp(req, res) {
 function logIn(req, res) {
     try {
         const { user, token } = req.body;
-        res.status(200).send({ name: user.firstName, token: token });
+        res.cookie('token', token, { maxAge: 900000, httpOnly: true});
+        console.log(res);
+        res.status(200).send({ id: user.id, name: user.firstName, ok:true });
     } catch(err) {
         console.log(err);
     }
 }
 
-module.exports = { signUp, logIn }
+function checkIfLoggedIn(req, res) {
+    try {
+        const { userId, token } = res.locals;
+        const user = getUserById(userId)[0];
+        res.cookie('token', token, { maxAge: 900000, httpOnly: true});
+        res.status(200).send({ id: user.id, name: user.firstName, ok:true });
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+function logOut(req, res) {
+    try {
+        res.clearCookie('token');
+        res.status(200).send('Logged out successfully');
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+
+module.exports = { signUp, logIn, checkIfLoggedIn, logOut }

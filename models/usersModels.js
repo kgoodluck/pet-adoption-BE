@@ -22,6 +22,16 @@ function getUserByEmail(email) {
     }
 }
 
+function getUserById(id) {
+    try {
+        const allUsers = getAllUsers();
+        const user = allUsers.filter(user => user.id === id)
+        return user.length > 0? user : false;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 function addNewUser(user) {
     try {
         const allUsers = getAllUsers();
@@ -33,4 +43,4 @@ function addNewUser(user) {
     }
 }
 
-module.exports = { getAllUsers, getUserByEmail, addNewUser };
+module.exports = { getAllUsers, getUserByEmail, addNewUser, getUserById };
