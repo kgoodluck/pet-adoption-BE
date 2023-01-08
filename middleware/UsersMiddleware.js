@@ -5,9 +5,10 @@ require('dotenv').config();
 const { getUserByEmail } = require('../models/usersModels')
 
 function isNewUser() {
-    return (req, res, next) => {
-        const user = getUserByEmail(req.body.email)
+    return async (req, res, next) => {
+        const user = await getUserByEmail(req.body.email)
         if (!user) return next();
+        console.log('user ->>>>>', user);
         res.status(400).send("User already exists");
         return;
     }
@@ -40,21 +41,22 @@ function hashPassword() {
     }
 }
 
-function doesUserExist(req, res, next) {
-    const user = getUserByEmail(req.body.email)
+async function doesUserExist(req, res, next) {
+    const user = await getUserByEmail(req.body.email)
     if (!user) {
         res.status(404).send("User wasn't found");
         return; 
     }
-    req.body.user = user[0];
+    req.body.user = user;
     next();
     return;
 }
 
 function verifyPassword(req, res, next) {
     const { password, user } = req.body;
+    console.log('user', user);
     try {
-        bcrypt.compare(password, user.password, function(err, result) {
+        bcrypt.compare(password, user.hashed_password, function(err, result) {
             if (err) {
                 res.status(500).send("Error verifying password");
                 return;

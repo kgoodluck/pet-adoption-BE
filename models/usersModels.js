@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const dbConnection = require("../_knex/knex");
 
 const pathToUsersDB = path.resolve(__dirname, "../database/usersDB.json");
 
@@ -12,35 +13,52 @@ function getAllUsers() {
     }
 }
 
-function getUserByEmail(email) {
+async function getUserByEmail(email) {
     try {
-        const allUsers = getAllUsers();
-        const user = allUsers.filter(user => user.email === email)
-        return user.length > 0? user : false;
+        const user = await dbConnection.from('users').where('email', email).first();
+        return user;
     } catch (err) {
         console.log(err);
     }
 }
 
-function getUserById(id) {
+async function getUserById(id) {
     try {
-        const allUsers = getAllUsers();
-        const user = allUsers.filter(user => user.id === id)
-        return user.length > 0? user : false;
+        const user = await dbConnection.from('users').where('id', id).first();
+        return user;
     } catch (err) {
         console.log(err);
     }
 }
 
-function addNewUser(user) {
+// function addNewUser(user) {
+//     try {
+//         const allUsers = getAllUsers();
+//         allUsers.push(user);
+//         const newUsersList = JSON.stringify(allUsers);
+//         fs.writeFileSync(pathToUsersDB, newUsersList);
+//     } catch(err) {
+//         console.log(err);
+//     }
+// }
+
+async function addNewUser(user) {
     try {
-        const allUsers = getAllUsers();
-        allUsers.push(user);
-        const newUsersList = JSON.stringify(allUsers);
-        fs.writeFileSync(pathToUsersDB, newUsersList);
+        const newUserId = await dbConnection.from('users').insert(user);
+        return newUserId;
     } catch(err) {
         console.log(err);
     }
 }
+
+async function makeUserAnAdmin(id) {
+    try {
+        const newAdminId = await dbConnection.from('users').where({ id: id }).update({is_admin: true});
+        return newAdminId;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
 
 module.exports = { getAllUsers, getUserByEmail, addNewUser, getUserById };
