@@ -62,4 +62,34 @@ async function populateDb() {
 
 // populateDb();
 
-module.exports = { readAllPets, readAllPetsDb, getPetById, addNewPet };
+async function addPetToWatchlist(userId, petId) {
+    try {
+        const addedPet = await dbConnection.from('pets_to_users_watchlish').insert({ user_id: userId, pet_id: petId });
+        return addedPet;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+async function deletePetFromWatchlist(userId, petId) {
+    try {
+        const addedPet = await dbConnection.from('pets_to_users_watchlish').where({ user_id: userId, pet_id: petId }).del();
+        return addedPet;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+async function getPetByPetAndUserId(userId, petId) {
+    try {
+        console.log('userId', userId);
+        console.log('petId', petId);
+        const pet = await dbConnection.from('pets_to_users_watchlish').where({ user_id: userId, pet_id: petId }).first();
+        console.log('pet', pet);
+        return pet;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+module.exports = { readAllPets, readAllPetsDb, getPetById, addNewPet, addPetToWatchlist, deletePetFromWatchlist, getPetByPetAndUserId };

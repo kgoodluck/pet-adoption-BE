@@ -41,6 +41,20 @@ function hashPassword() {
     }
 }
 
+function hashNewPassword(req, res, next) {
+    if (!req.body.password) return next();
+    const saltRounds = 10;
+    bcrypt.hash(req.body.newPassword, saltRounds, function(err, hash) {
+        if (err) {
+            res.status(500).send("Error hashing password");
+            return;
+        }
+        req.body.newPassword = hash;
+        console.log('asdd');
+        next();
+    });
+}
+
 async function doesUserExist(req, res, next) {
     const user = await getUserByEmail(req.body.email)
     if (!user) {
@@ -54,14 +68,15 @@ async function doesUserExist(req, res, next) {
 
 function verifyPassword(req, res, next) {
     const { password, user } = req.body;
-    console.log('user', user);
+    console.log('verifyPassword');
+    if (!password) return next();
     try {
         bcrypt.compare(password, user.hashed_password, function(err, result) {
             if (err) {
                 res.status(500).send("Error verifying password");
                 return;
             } else if (!result) {
-                res.status(400).send("Incorrect password");
+                res.status(403).send("Incorrect password");
                 return;
             }
         next();
@@ -102,4 +117,4 @@ function verifyToken(req, res, next) {
     });
 }
 
-module.exports = { isNewUser, checkPasswords, hashPassword, doesUserExist, verifyPassword, createToken, verifyToken }
+module.exports = { isNewUser, checkPasswords, hashPassword, doesUserExist, verifyPassword, createToken, verifyToken, hashNewPassword }

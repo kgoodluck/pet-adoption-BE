@@ -60,5 +60,14 @@ async function makeUserAnAdmin(id) {
     }
 }
 
+async function updateUserData(id, data) {
+    try {
+        const updatedUser = await dbConnection.from('users').where('id', id).update(data);
+        return updatedUser;
+    } catch(err) {
+        console.log(err);
+    }
+}
 
-module.exports = { getAllUsers, getUserByEmail, addNewUser, getUserById };
+
+module.exports = { getAllUsers, getUserByEmail, addNewUser, getUserById, updateUserData };

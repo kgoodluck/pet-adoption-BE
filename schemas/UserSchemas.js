@@ -20,4 +20,19 @@ const loginSchema = {
     required: ["email", "password"]  
 }
 
-module.exports = { signUpSchema, loginSchema }
+const updateInfoSchema = {
+    type: "object",
+    properties: {
+        "firstName": {type: "string"},
+        "lastName": {type: "string"},
+        "email": {type: "string", format:"email"},
+        "phone": {type: "string"},
+        "bio": {type: "string"},
+        "password": {type: "string"},
+        "newPassword": {type: "string"},
+        "isChangingPassword": {type: "boolean"},
+    },
+    required: ["firstName", "lastName", "email", "phone", "bio"]  
+}
+
+module.exports = { signUpSchema, loginSchema, updateInfoSchema }

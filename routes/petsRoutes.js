@@ -6,6 +6,7 @@ const { readAllPets, getPetById } = require('../models/petsModels');
 const PetsController = require('../controllers/PetsController');
 const { validateBody } = require('../middleware/validateBody');
 const { addPetSchema } = require('../schemas/PetSchemas');
+const { checkIfUserAlreadyHasThisPet, checkIfUserHasThisPet } = require('../middleware/PetsMiddleware');
 
 const pathToPetsDB = path.resolve(__dirname, '../database/petsDB.json');
 
@@ -23,5 +24,9 @@ router.get('/:petId', async (req, res) => {
 }) 
 
 router.post('/', validateBody(addPetSchema), PetsController.postNewPet);
+
+router.get('/watchlist/:userId', PetsController.getAllPets);
+router.post('/watchlist/:userId', checkIfUserAlreadyHasThisPet, PetsController.addPetToUserWatchlist);
+router.delete('/watchlist/:userId/:petId', checkIfUserHasThisPet, PetsController.deletePetFromUserWatchlist);
 
 module.exports = router;
