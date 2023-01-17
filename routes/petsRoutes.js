@@ -7,6 +7,7 @@ const PetsController = require('../controllers/PetsController');
 const { validateBody } = require('../middleware/validateBody');
 const { addPetSchema } = require('../schemas/PetSchemas');
 const { checkIfUserAlreadyHasThisPet, checkIfUserHasThisPet, checkTheArray } = require('../middleware/PetsMiddleware');
+const { upload, addUrl } = require('../middleware/ImagesMiddleware');
 
 const pathToPetsDB = path.resolve(__dirname, '../database/petsDB.json');
 
@@ -14,18 +15,12 @@ router.get('/watchlist-array/', checkTheArray, PetsController.getFullWatchlist);
 
 router.get('/', PetsController.getAllPets);
 
-router.get('/:petId', async (req, res) => {
-    try {
-        const { petId } = req.params;
-        const pet = await getPetById(petId);
-        res.send(pet);
-    } catch(err) {
-        console.log(err);
-        res.status(500).send(err);
-    }
-}) 
+router.get('/:petId', PetsController.getOnePetById);
 
-router.post('/', validateBody(addPetSchema), PetsController.postNewPet);
+// validateBody(addPetSchema)
+// (req, res) => {console.log('req.body', req.body)},
+
+router.post('/', upload.single('picture'), addUrl, PetsController.postNewPet);
 router.put('/', validateBody(addPetSchema), PetsController.editPet);
 
 router.get('/watchlist/:userId', PetsController.getPetsFromWatchlist);

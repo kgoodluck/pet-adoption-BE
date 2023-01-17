@@ -1,4 +1,4 @@
-const { readAllPets, readAllPetsDb, addNewPet, addPetToWatchlist, deletePetFromWatchlist, getPetsFromWatchlistByUserId, getManyPetsByIds, addPetToUser, removePetFromUser, getOwnedPetsFromDB, updatePet } = require("../models/petsModels");
+const { readAllPets, readAllPetsDb, addNewPet, addPetToWatchlist, deletePetFromWatchlist, getPetsFromWatchlistByUserId, getManyPetsByIds, addPetToUser, removePetFromUser, getOwnedPetsFromDB, updatePet, getPetById } = require("../models/petsModels");
 
 async function getAllPets(req, res) {
     try {
@@ -10,11 +10,23 @@ async function getAllPets(req, res) {
     }
 }
 
+async function getOnePetById(req, res) {
+    try {
+        const { petId } = req.params;
+        const pet = await getPetById(petId);
+        res.send(pet);
+    } catch(err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+}
+
 async function postNewPet(req, res) {
     try {
-        const addedPet = await addNewPet(req.body);
-        console.log('added', addedPet);
-        res.status(200).send(addedPet);
+        const addedPetId = await addNewPet(req.body);
+        const pet = {...req.body, id: addedPetId[0]};
+        console.log('added', pet);
+        res.status(200).send(pet);
     } catch(err) {
         console.log(err);
         res.status(500).send(err);
@@ -116,4 +128,4 @@ async function returnPet(req, res) {
 }
 
 
-module.exports = { getAllPets, postNewPet, editPet, getPetsFromWatchlist, getFullWatchlist, addPetToUserWatchlist, deletePetFromUserWatchlist, getOwnedPets, adoptPet, returnPet }
+module.exports = { getAllPets, getOnePetById, postNewPet, editPet, getPetsFromWatchlist, getFullWatchlist, addPetToUserWatchlist, deletePetFromUserWatchlist, getOwnedPets, adoptPet, returnPet }
