@@ -31,6 +31,15 @@ async function getUserById(id) {
     }
 }
 
+async function getAllUsersFromDB() {
+    try {
+        const allUsers = await dbConnection.from('users').select('*');
+        return allUsers;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 // function addNewUser(user) {
 //     try {
 //         const allUsers = getAllUsers();
@@ -70,4 +79,4 @@ async function updateUserData(id, data) {
 }
 
 
-module.exports = { getAllUsers, getUserByEmail, addNewUser, getUserById, updateUserData };
+module.exports = { getAllUsers, getUserByEmail, addNewUser, getUserById, getAllUsersFromDB, updateUserData };

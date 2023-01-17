@@ -32,10 +32,29 @@ async function getPetById(id) {
     }
 }
 
+async function getManyPetsByIds(arrayOfIds) {
+    try {
+        const petsArray = await dbConnection.from('pets').whereIn('id', arrayOfIds);
+        return petsArray;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
 async function addNewPet(pet) {
     try {
         const addedPetId = await dbConnection.from('pets').insert(pet);
         return addedPetId;
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+async function updatePet(pet) {
+    try {
+        delete pet.created_at;
+        const updatedPet = await dbConnection.from('pets').where({id: pet.id}).update(pet);
+        return updatedPet;
     } catch (err) {
         console.log(err);
     }
@@ -61,6 +80,25 @@ async function populateDb() {
 }
 
 // populateDb();
+
+async function getOwnedPetsFromDB(userId) {
+    try {
+        const allPets = await dbConnection.from('pets').where({ ownerId: userId });
+        return allPets;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+async function getPetsFromWatchlistByUserId(userId) {
+    try {
+        console.log('userId', userId);
+        const allPets = await dbConnection.from('pets_to_users_watchlish').where({ user_id: userId }).select('pet_id');
+        return allPets;
+    } catch(err) {
+        console.log(err);
+    }
+}
 
 async function addPetToWatchlist(userId, petId) {
     try {
@@ -92,4 +130,37 @@ async function getPetByPetAndUserId(userId, petId) {
     }
 }
 
-module.exports = { readAllPets, readAllPetsDb, getPetById, addNewPet, addPetToWatchlist, deletePetFromWatchlist, getPetByPetAndUserId };
+async function addPetToUser(userId, petId, action) {
+    try {
+        const status = action === 'adopt' ? 'Adopted' : 'Fostered';
+        const pet = await dbConnection.from('pets').where({id: petId}).update({ ownerId: userId, adoptionStatus: status })
+        return pet;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+async function changeId() {
+    try {
+        const change = await dbConnection.from('pets').where({ownerId: null, adoptionStatus: 'Fostered'}).update({ ownerId: 77 });
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+// changeId();
+
+async function removePetFromUser(petId) {
+    try {
+        console.log('petId', petId);
+        const pet = await dbConnection.from('pets').where({id: petId}).update({ ownerId: null, adoptionStatus: 'Available' });
+        console.log('removing pet');
+        return pet;
+    } catch(err) {
+        console.log(err);
+    }
+}
+
+// removePetFromUser('129')
+
+module.exports = { readAllPets, readAllPetsDb, getPetById, getManyPetsByIds, addNewPet, updatePet, getOwnedPetsFromDB, getPetsFromWatchlistByUserId, addPetToWatchlist, deletePetFromWatchlist, getPetByPetAndUserId, addPetToUser, removePetFromUser };

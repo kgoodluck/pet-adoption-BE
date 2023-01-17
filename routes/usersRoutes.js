@@ -15,4 +15,6 @@ router.put("/", verifyToken, validateBody(updateInfoSchema), doesUserExist, veri
 router.get("/login", verifyToken, UsersController.checkIfLoggedIn);
 router.get("/getUserData/:id", verifyToken, UsersController.getUserData);
 
+router.get("/", verifyToken, UsersController.getAllUsers);
+
 module.exports = router; 

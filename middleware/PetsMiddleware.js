@@ -23,4 +23,10 @@ async function checkIfUserHasThisPet(req, res, next) {
     }
 }
 
-module.exports = { checkIfUserAlreadyHasThisPet, checkIfUserHasThisPet }
+function checkTheArray(req, res, next) {
+    if(!req.headers.arrayofids) return res.send(false);
+    if(req.headers.arrayofids == []) return res.send(false);
+    next();
+}
+
+module.exports = { checkIfUserAlreadyHasThisPet, checkIfUserHasThisPet, checkTheArray }

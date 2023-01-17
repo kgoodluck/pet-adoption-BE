@@ -15,7 +15,7 @@ const addPetSchema = {
         "age": {type: "number"},
         "ownerId": {type: "string"}
     },
-    required: ["type", "name", "adoptionStatus", "picture"]  
+    required: ["type", "name", "adoptionStatus"]  
 }
 
 module.exports = { addPetSchema }

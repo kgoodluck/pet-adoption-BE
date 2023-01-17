@@ -1,4 +1,4 @@
-const { addNewUser, getUserById, updateUserData } = require('../models/usersModels')
+const { addNewUser, getUserById, updateUserData, getAllUsersFromDB } = require('../models/usersModels')
 
 async function signUp(req, res) {
     try {
@@ -65,5 +65,15 @@ async function updateUserInfo(req, res) {
     }
 }
 
+async function getAllUsers(req, res) {
+    try {
+        const allUsers = await getAllUsersFromDB();
+        res.status(200).send(allUsers);
+    } catch(err) {
+        console.log(err);
+        res.status(500).send(err);
+    }
+}
 
-module.exports = { signUp, logIn, checkIfLoggedIn, logOut, getUserData, updateUserInfo }
+
+module.exports = { signUp, logIn, checkIfLoggedIn, logOut, getUserData, updateUserInfo, getAllUsers }

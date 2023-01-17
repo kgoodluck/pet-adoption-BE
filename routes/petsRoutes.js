@@ -6,9 +6,11 @@ const { readAllPets, getPetById } = require('../models/petsModels');
 const PetsController = require('../controllers/PetsController');
 const { validateBody } = require('../middleware/validateBody');
 const { addPetSchema } = require('../schemas/PetSchemas');
-const { checkIfUserAlreadyHasThisPet, checkIfUserHasThisPet } = require('../middleware/PetsMiddleware');
+const { checkIfUserAlreadyHasThisPet, checkIfUserHasThisPet, checkTheArray } = require('../middleware/PetsMiddleware');
 
 const pathToPetsDB = path.resolve(__dirname, '../database/petsDB.json');
+
+router.get('/watchlist-array/', checkTheArray, PetsController.getFullWatchlist);
 
 router.get('/', PetsController.getAllPets);
 
@@ -24,9 +26,15 @@ router.get('/:petId', async (req, res) => {
 }) 
 
 router.post('/', validateBody(addPetSchema), PetsController.postNewPet);
+router.put('/', validateBody(addPetSchema), PetsController.editPet);
 
-router.get('/watchlist/:userId', PetsController.getAllPets);
+router.get('/watchlist/:userId', PetsController.getPetsFromWatchlist);
 router.post('/watchlist/:userId', checkIfUserAlreadyHasThisPet, PetsController.addPetToUserWatchlist);
 router.delete('/watchlist/:userId/:petId', checkIfUserHasThisPet, PetsController.deletePetFromUserWatchlist);
+
+router.get('/owned-pets/:userId', PetsController.getOwnedPets);
+
+router.post('/adopt-pet/', PetsController.adoptPet);
+router.post('/return-pet/', PetsController.returnPet);
 
 module.exports = router;
